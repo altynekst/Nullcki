@@ -1,0 +1,63 @@
+name: Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      architectures:
+        description: 'Architectures: arm64 or all'
+        required: false
+        default: 'arm64'
+
+jobs:
+  build-android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_HTTP_MULTIPLEXING: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v5
+
+      - name: Prepare Linux
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install ninja-build openjdk-21-jdk openssl
+          curl -LO https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1-Linux-x86_64.tar.gz
+          mkdir -p /home/runner/cmake
+          tar --strip-components 1 -C /home/runner/cmake -xf cmake-3.22.1-Linux-x86_64.tar.gz
+          rustup default 1.92.0
+          cargo install cargo-ndk
+          rustup target add armv7-linux-androideabi
+          rustup target add i686-linux-android
+          rustup target add aarch64-linux-android
+          rustup target add x86_64-linux-android
+          scripts/android/download_android_sdk.sh /home/runner
+
+      - name: Install Vulkan SDK
+        uses: humbletim/install-vulkan-sdk@v1.2
+        with:
+          version: 1.3.296.0
+          cache: true
+
+      - name: Build Android app
+        run: |
+          export TW_KEY_NAME=/home/runner/OpenClient.jks
+          export TW_KEY_ALIAS=OpenClient-Key
+          export TW_KEY_PW="$(openssl rand -base64 32)"
+          keytool -genkey -v -keystore "$TW_KEY_NAME" -keyalg RSA -keysize 2048 -validity 10000 -alias "$TW_KEY_ALIAS" -storepass "$TW_KEY_PW" -dname "CN=OpenClient, OU=OpenClient, O=OpenClient"
+          export ANDROID_HOME="/home/runner/Android/Sdk"
+          unset ANDROID_SDK_ROOT
+          export PATH=/home/runner/cmake/bin:$PATH
+          scripts/android/cmake_android.sh ${{ inputs.architectures || 'arm64' }} DDNet com.altynekst.openclient Release build-android-release
+          mkdir -p artifacts
+          mv build-android-release/DDNet.apk artifacts/OpenClient.apk
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: OpenClient-android
+          path: artifacts
