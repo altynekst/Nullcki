@@ -35,7 +35,10 @@ jobs:
           rustup target add i686-linux-android
           rustup target add aarch64-linux-android
           rustup target add x86_64-linux-android
-          scripts/android/download_android_sdk.sh /home/runner
+          # файлы из репо могут быть без бита исполнения - чиним и зовём через bash
+          find scripts -name '*.sh' -exec chmod +x {} +
+          chmod +x scripts/android/files/gradlew
+          bash scripts/android/download_android_sdk.sh /home/runner
 
       - name: Install Vulkan SDK
         uses: humbletim/install-vulkan-sdk@v1.2
@@ -52,7 +55,7 @@ jobs:
           export ANDROID_HOME="/home/runner/Android/Sdk"
           unset ANDROID_SDK_ROOT
           export PATH=/home/runner/cmake/bin:$PATH
-          scripts/android/cmake_android.sh ${{ inputs.architectures || 'arm64' }} DDNet com.altynekst.openclient Release build-android-release
+          bash scripts/android/cmake_android.sh ${{ inputs.architectures || 'arm64' }} DDNet com.altynekst.openclient Release build-android-release
           mkdir -p artifacts
           mv build-android-release/DDNet.apk artifacts/OpenClient.apk
 
