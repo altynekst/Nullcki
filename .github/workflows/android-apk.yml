@@ -24,12 +24,14 @@ jobs:
 
       - name: Prepare Linux
         run: |
-          sudo apt-get update -y
-          sudo apt-get install ninja-build openjdk-21-jdk openssl
-          curl -LO https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1-Linux-x86_64.tar.gz
+          sudo apt-get update -y -o Acquire::Retries=5
+          sudo apt-get install -y -o Acquire::Retries=5 ninja-build openjdk-21-jdk openssl
+          curl -fL --retry 5 --retry-delay 5 --retry-all-errors --connect-timeout 30 -o cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1-Linux-x86_64.tar.gz
           mkdir -p /home/runner/cmake
-          tar --strip-components 1 -C /home/runner/cmake -xf cmake-3.22.1-Linux-x86_64.tar.gz
+          tar --strip-components 1 -C /home/runner/cmake -xf cmake.tar.gz
           rustup default 1.92.0
+          export CARGO_NET_RETRY=10
+          export CARGO_HTTP_TIMEOUT=120
           cargo install cargo-ndk
           rustup target add armv7-linux-androideabi
           rustup target add i686-linux-android
@@ -38,7 +40,7 @@ jobs:
           # файлы из репо могут быть без бита исполнения - чиним и зовём через bash
           find scripts -name '*.sh' -exec chmod +x {} +
           chmod +x scripts/android/files/gradlew
-          bash scripts/android/download_android_sdk.sh /home/runner
+          bash scripts/android/download_android_sdk.sh /home/runner             || { sleep 15; bash scripts/android/download_android_sdk.sh /home/runner; }
 
       - name: Install Vulkan SDK
         uses: humbletim/install-vulkan-sdk@v1.2
