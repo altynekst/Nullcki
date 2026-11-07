@@ -25,24 +25,10 @@
 // Evidence and original conditional card sizes: research/easy-port-20261030/.
 void CMenus::RenderSettingsKrx(CUIRect MainView)
 {
-	// Whole-client profiles: the selector is outside every provider's pages.
-	static CButtonContainer s_aProfiles[2];
-	CUIRect ProfileBar, ProfileButton;
-	MainView.HSplitTop(28.0f, &ProfileBar, &MainView);
-	const char *apProfiles[] = {"KRX", "NullClient"};
-	for(int Profile = 0; Profile < 2; ++Profile)
-	{
-		ProfileBar.VSplitLeft(MainView.w / 2, &ProfileButton, &ProfileBar);
-		if(DoButton_MenuTab(&s_aProfiles[Profile], apProfiles[Profile],
-			g_Config.m_OpenKrxAvoidProvider == Profile, &ProfileButton, IGraphics::CORNER_ALL))
-			g_Config.m_OpenKrxAvoidProvider = Profile;
-	}
-	MainView.HSplitTop(8.0f, nullptr, &MainView);
-	if(g_Config.m_OpenKrxAvoidProvider == 1)
-	{
-		RenderSettingsNullClient(MainView);
-		return;
-	}
+	// NullClient only: the KRX profile pages are not reachable from the menu.
+	// The openkrx_profile variable is left untouched (console command still works).
+	RenderSettingsNullClient(MainView);
+	return;
 	static CButtonContainer s_aTabs[6];
 	const char *const apTabs[] = {"Aimbot", "Misc", "Visuals & HUD", "Avoid", "TAS", "Settings"};
 	CUIRect Tabs, Button;

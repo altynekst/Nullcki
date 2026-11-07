@@ -2998,11 +2998,11 @@ Do not switch back
 Switch back: NullClient
 == Возврат: NullClient
 
-Switch back: OpenKRX (confirmed shot)
-== Возврат: OpenKRX (подтверждённый выстрел)
+Switch back: confirmed shot
+== Возврат: подтверждённый выстрел
 
-NullClient uses its original weapon return. OpenKRX waits for a confirmed grenade shot or a safe cancellation.
-== NullClient использует родной возврат. OpenKRX ждёт подтверждённого выстрела гранатой или безопасной отмены.
+NullClient uses its original weapon return. The other mode waits for a confirmed grenade shot or a safe cancellation.
+== NullClient использует родной возврат. Другой режим ждёт подтверждённого выстрела гранатой или безопасной отмены.
 
 Keep manual jump when Null can rescue it
 == Сохранять ручной прыжок, если Null находит спасение

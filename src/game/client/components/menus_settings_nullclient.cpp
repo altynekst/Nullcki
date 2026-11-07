@@ -522,7 +522,7 @@ void CMenus::RenderSettingsNullClient(CUIRect MainView)
 				static CUi::SDropDownState s_ReturnMode;
 				static CScrollRegion s_ReturnModeScroll;
 				s_ReturnMode.m_SelectionPopupContext.m_pScrollRegion = &s_ReturnModeScroll;
-				const char *apModes[] = {Localize("Do not switch back"), Localize("Switch back: NullClient"), Localize("Switch back: OpenKRX (confirmed shot)")};
+				const char *apModes[] = {Localize("Do not switch back"), Localize("Switch back: NullClient"), Localize("Switch back: confirmed shot")};
 				const int Current = g_Config.m_NullRocketRestoreWeapon ? 2 : g_Config.m_NullGodmodeRestoreWeapon ? 1 :
 																   0;
 				const int Selected = Ui()->DoDropDown(&Row, Current, apModes, 3, s_ReturnMode);
@@ -531,7 +531,7 @@ void CMenus::RenderSettingsNullClient(CUIRect MainView)
 					g_Config.m_NullRocketRestoreWeapon = Selected == 2;
 					g_Config.m_NullGodmodeRestoreWeapon = Selected == 1;
 				}
-				Ui()->DoToolTip(Setting.m_pValue, &Row, Localize("NullClient uses its original weapon return. OpenKRX waits for a confirmed grenade shot or a safe cancellation."));
+				Ui()->DoToolTip(Setting.m_pValue, &Row, Localize("NullClient uses its original weapon return. The other mode waits for a confirmed grenade shot or a safe cancellation."));
 			}
 			else if(Setting.m_Choice)
 			{
