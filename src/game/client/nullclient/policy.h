@@ -72,7 +72,7 @@ namespace OpenKrx::NullClient
 		float m_TeeHookCost = 0;
 		float m_HazardSpeed = 0;
 	};
-	static_assert(sizeof(CWeights) == 0xa0);
+	static_assert(sizeof(CWeights) == (sizeof(void *) == 8 ? 0xa0 : 0x8c));
 
 	struct CEvaluation
 	{
