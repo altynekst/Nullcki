@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       architectures:
-        description: 'Architectures: arm64 or all'
+        description: 'Architectures: arm (32-bit), arm64 or all'
         required: false
-        default: 'arm64'
+        default: 'arm'
 
 jobs:
   build-android:
@@ -57,12 +57,12 @@ jobs:
           export ANDROID_HOME="/home/runner/Android/Sdk"
           unset ANDROID_SDK_ROOT
           export PATH=/home/runner/cmake/bin:$PATH
-          bash scripts/android/cmake_android.sh ${{ inputs.architectures || 'arm64' }} DDNet com.altynekst.openclient Release build-android-release
+          bash scripts/android/cmake_android.sh ${{ inputs.architectures || 'arm' }} DDNet com.altynekst.openclient Release build-android-release
           mkdir -p artifacts
-          mv build-android-release/DDNet.apk artifacts/OpenClient.apk
+          mv build-android-release/DDNet.apk artifacts/OpenClient-arm32.apk
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: OpenClient-android
+          name: OpenClient-android-arm32
           path: artifacts
